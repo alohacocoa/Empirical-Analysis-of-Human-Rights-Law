@@ -1,5 +1,5 @@
 # Empirical-Analysis-of-Human-Rights-Law
-This is a student research project from the course "Empirical Analysis of International Human Rights Law" taught at the University of St. Gallen.
+This is a student research project for the course "Empirical Analysis of International Human Rights Law" taught at the University of St. Gallen.
 
 # About the project
 We inspect and compare the types of human rights violations committed by Switzerland and Slovakia in the last ten years. We make use of data provided by https://hudoc.echr.coe.int/eng.
