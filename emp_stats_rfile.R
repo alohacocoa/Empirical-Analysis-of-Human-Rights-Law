@@ -80,7 +80,7 @@ for (l in 1:length(hudoc$violations_with_text)) {
   hudoc$violations_with_text_numbers[l] <- stringr::str_extract_all(hudoc$violations_with_text[l], "\\d+")
 } 
 
-#this creates a new variable that contains all the instances of "NUMBER+NUMBER". I manually checked and none of these are cases of non-violations
+## [We don't need this when using the appraoch below] this creates a new variable that contains all the instances of "NUMBER+NUMBER". I manually checked and none of these are cases of non-violations
 for (l in 1:length(hudoc$violations_with_text)) {
   hudoc$violations_with_plus_numbers[l] <- stringr::str_extract_all(hudoc$violations_with_plus[l], "\\d+")
 } 
@@ -112,8 +112,44 @@ glimpse(hudoc)
 
 
 #still to do before data visualization:
-# - find and get rid of duplicates
+# - find and get rid of duplicates (is included in the first lines of code)
 # - use hudoc$violations variable to create a new row in every case where there is more than one violation, copying everything except for the value of hudoc$violation. don't know how to do that yet
+# => I was a bit lazy and chose another approach, I groupd the violations (violations_with_text) by country, aggregated all violations per country, got rid of the "violations of" part, and extracted the numbers
+
+#create new dataobject and group new dataset "bycountry" by country, remove list values by applying unlist
+bycountry <- apply(hudoc, 2, function(y) sapply(y, function(x) paste(unlist(x), collapse=" ")))
+
+#aggregate data by country, concatenate text of violations
+agg <- aggregate(data=bycountry, unlist(violations_with_text)~country, paste0, collapse=' ')
+
+#rename variable name to concat_violations
+agg$concat_violations <-agg$`unlist(violations_with_text)`
+
+#get number of violations for slovakia (since the values are displayed as a list, we need to apply unlist; in a second step we remove the spaces)
+slovakia <- agg$concat_violations[1]
+slovakia <- str_split(slovakia, 'violation of art ')
+slovakia <- unlist(slovakia)
+slovakia <- gsub(" |   ", "", slovakia)
+
+#not necessary, but facilitates the identification of articles (see levels)
+slovakia <- as.factor(slovakia)
+slovakia
+
+#art 6 is the most violated article for Slovakia
+table(slovakia)
+
+#get number of violations for switzerland (since the values are displayed as a list, we need to apply unlist; in a second step we remove the spaces)
+switz <- agg$concat_violations[2]
+switz <- str_split(switz, 'violation of art ')
+switz <- unlist(switz)
+switz <- gsub(" |   ", "", switz)
+
+#not necessary, but facilitates the identification of articles (see levels)
+switz <- as.factor(switz)
+switz
+
+#Interestingly, art 6 is the most violated article for Switzerland 
+table(switz)
 
 
 
