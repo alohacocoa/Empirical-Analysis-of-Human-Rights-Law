@@ -59,52 +59,30 @@ hudoc$text <- hudoc$conclusion
 #this makes it so that the french is the same as english
 hudoc$text <- gsub("  |   ", " ", hudoc$text)
 hudoc$text <- gsub(" de l'", " of ", hudoc$text)
-hudoc$text <- gsub("article ", "art ", hudoc$text)
+hudoc$text <- gsub("article ", "art. ", hudoc$text)
 hudoc$text <- gsub("non ", "no ", hudoc$text)
 hudoc$text <- gsub("non-violation", "no violation", hudoc$text)
-
-
-
-
+hudoc$text <- gsub("\\+", " violation of art. ", hudoc$text)
 
 #this looks for the phrase "violation of" followed by any number of non-digit characters and ends with one or more digits. the whole phrase must not be preceded by "no ". the matches are then written into the new varialbe "violations_with_text". the variable is a list
-hudoc$violations_with_text <-  stringr::str_extract_all(hudoc$text, "(?<!no\\s)violation\\sof\\D{0,20}\\d+") 
-
-#this looks for the phrase "NUMBER+NUMBER" the matches are  written into the new varialbe "violations_with_plus". the variable is a list
-hudoc$violations_with_plus <-  stringr::str_extract(hudoc$text, "\\d+\\+\\d+(?!\\-)") 
+hudoc$violations_with_text <-  stringr::str_extract_all(hudoc$text, "(?<!no\\s)violation\\sof\\sart\\D{0,20}\\d+(?!\\sof\\sprotocol)") 
 
 
-
-#this creates a new variable called "violations_with_text". it gets rid of the text and leaves only the numbers. I couldn't do it with only regex because for some reason, using negative and positive lookbehind does not work (in R). anyway, the variable is also a list
-for (l in 1:length(hudoc$violations_with_text)) {
-  hudoc$violations_with_text_numbers[l] <- stringr::str_extract_all(hudoc$violations_with_text[l], "\\d+")
-} 
-
-## [We don't need this when using the appraoch below] this creates a new variable that contains all the instances of "NUMBER+NUMBER". I manually checked and none of these are cases of non-violations
-for (l in 1:length(hudoc$violations_with_text)) {
-  hudoc$violations_with_plus_numbers[l] <- stringr::str_extract_all(hudoc$violations_with_plus[l], "\\d+")
-} 
-
-#this combines the two variables into one
-hudoc$violation_numbers_combined <- mapply(c, hudoc$violations_with_plus_numbers, hudoc$violation_with_text_numbers, SIMPLIFY = FALSE)
-
-#this loop below gets rid of missing values that were present in the "violations_with_plus_numbers" variable
-for (l in 1:length(hudoc$violation_numbers_combined)) {
-  hudoc$violation_numbers_combined[[l]] <- hudoc$violation_numbers_combined[[l]][!is.na(hudoc$violation_numbers_combined[[l]])]
-}
+# #this creates a new variable called "violations_with_text". it gets rid of the text and leaves only the numbers. I couldn't do it with only regex because for some reason, using negative and positive lookbehind does not work (in R). anyway, the variable is also a list
+# for (l in 1:length(hudoc$violations_with_text)) {
+#   hudoc$violations_with_text_numbers[l] <- stringr::str_extract_all(hudoc$violations_with_text[l], "\\d+")
+# } 
 
 #this loop below gets rid of duplicate values from situations like "violation of art. 14+3" where 14 was matched twice
-for (l in 1:length(hudoc$violation_numbers_combined)) {
-  hudoc$violation_numbers_combined[[l]] <- unique(hudoc$violation_numbers_combined[[l]])
+for (l in 1:length(hudoc$violations_with_text)) {
+  hudoc$violations_with_text[[l]] <- unique(hudoc$violations_with_text[[l]])
 }
 
-#this creates a new variable "violations" based on the previous variable
-hudoc$violations <- hudoc$violation_numbers_combined
+#this gets rid of rows where "hudoc$violations_with_text" is missing values
+hudoc <- hudoc[!is.na(hudoc$violations_with_text), ]
 
-hudoc$violations
 
-#this gets rid of all the intermediary variables
-glimpse(hudoc)
+
 
 
 
@@ -127,7 +105,7 @@ agg$concat_violations <-agg$`unlist(violations_with_text)`
 
 #get number of violations for slovakia (since the values are displayed as a list, we need to apply unlist; in a second step we remove the spaces)
 slovakia <- agg$concat_violations[1]
-slovakia <- str_split(slovakia, 'violation of art ')
+slovakia <- str_split(slovakia, 'violation of art. ')
 slovakia <- unlist(slovakia)
 slovakia <- gsub(" |   ", "", slovakia)
 
@@ -140,7 +118,7 @@ table(slovakia)
 
 #get number of violations for switzerland (since the values are displayed as a list, we need to apply unlist; in a second step we remove the spaces)
 switz <- agg$concat_violations[2]
-switz <- str_split(switz, 'violation of art ')
+switz <- str_split(switz, 'violation of art. ')
 switz <- unlist(switz)
 switz <- gsub(" |   ", "", switz)
 
