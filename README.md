@@ -91,7 +91,7 @@ hudoc$violations_with_text <-  stringr::str_extract_all(hudoc$text, "(?<!no\\s)v
 ```
 
 ## Step 5
-We build a loop to get rid of duplicate values in the "violations_with_text" variable as now we situations where the conclusion lists a certain article multiple times in a phrase, e.g. Insert case example.
+We build a loop to get rid of duplicate values in the "violations_with_text" variable as now we have situations where the conclusion lists a certain article multiple times in a phrase, e.g. Insert case example.
 ```{r}
 for (l in 1:length(hudoc$violations_with_text)) {
   hudoc$violations_with_text[[l]] <- unique(hudoc$violations_with_text[[l]])
