@@ -13,7 +13,7 @@ Alternatively, this is a direct link to the search results: https://hudoc.echr.c
 
 # Data manipulation
 ## R set-up
-First, we clear the R environment and set the system language to English.
+First, we clear the R environment and set the system language to English. In addition, we activate libraries which we need for the subsequent coding.
 ```{r}
 #this clears the environment
 rm(list = ls())
