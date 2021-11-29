@@ -153,7 +153,7 @@ switz.table <- as.data.frame(switz.table)
 switz.table <- switz.table[-1,] 
 
 sw <- ggplot(switz.table, aes(x=violations)) +
-  geom_bar(color="blue", fill=rgb(0.1,0.4,0.5,0.7) ) + xlab("Violated ECHR Aritcles by Switzerland")
+  geom_bar(color="blue", fill=rgb(0.1,0.4,0.5,0.7) ) + xlab("Violated ECHR Articles by Switzerland")
 sw
 
 #data frame for Slovakia
@@ -164,5 +164,5 @@ slov.table <- as.data.frame(slov.table)
 slov.table <- slov.table[-1,] 
 
 sl <- ggplot(slov.table, aes(x=violations)) +
-  geom_bar(color="blue", fill=rgb(0.1,0.4,0.5,0.7) ) + xlab("Violated ECHR Aritcles by Slovakia")
+  geom_bar(color="blue", fill=rgb(0.1,0.4,0.5,0.7) ) + xlab("Violated ECHR Articles by Slovakia")
 sl
