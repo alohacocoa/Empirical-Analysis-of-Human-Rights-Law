@@ -63,45 +63,54 @@ for (l in 1:length(hudoc$violations_with_text)) {
   hudoc$violations_with_text[[l]] <- unique(hudoc$violations_with_text[[l]])
 }
 
-#this gets rid of rows where "hudoc$violations_with_text" is missing values
-#hudoc <- hudoc[!is.na(hudoc$violations_with_text), ]
-#hudoc <- list.clean(hudoc, fun = function(x) length(x) == 0L, recursive = TRUE)
-
 #create new dataobject and group new dataset "bycountry" by country, remove list values by applying unlist
 bycountry <- apply(hudoc, 2, function(y) sapply(y, function(x) paste(unlist(x), collapse=" ")))
 
 #aggregate data by country, concatenate text of violations
-agg <- aggregate(data=bycountry, unlist(violations_with_text)~country, paste0, collapse=' ')
+agg <- aggregate(data=bycountry, violations_with_text~country, paste0, collapse=' ')
 
-#rename variable name to concat_violations
-agg$concat_violations <-agg$`unlist(violations_with_text)`
 
 #get number of violations for slovakia (since the values are displayed as a list, we need to apply unlist; in a second step we remove the spaces)
-slovakia <- agg$concat_violations[1]
+slovakia <- agg$violations_with_text[1]
 slovakia <- str_split(slovakia, 'violation of art. ')
 slovakia <- unlist(slovakia)
 slovakia <- gsub(" |   ", "", slovakia)
-
-#not necessary, but facilitates the identification of articles (see levels)
 slovakia <- as.factor(slovakia)
 slovakia
-
-#art 6 is the most violated article for Slovakia
 table(slovakia)
 
+
 #get number of violations for switzerland (since the values are displayed as a list, we need to apply unlist; in a second step we remove the spaces)
-switz <- agg$concat_violations[2]
+switz <- agg$violations_with_text[2]
 switz <- str_split(switz, 'violation of art. ')
 switz <- unlist(switz)
 switz <- gsub(" |   ", "", switz)
-
-#not necessary, but facilitates the identification of articles (see levels)
 switz <- as.factor(switz)
 switz
-
-#Interestingly, art 6 is the most violated article for Switzerland 
 table(switz)
 
+#data frame for Switzerland
+x1 <- "Switzerland"
+x2 <- switz
+switz.table <- list(country = x1, violations = x2)
+switz.table <- as.data.frame(switz.table)
+switz.table <- switz.table[-1,] 
+#plot
+sw <- ggplot(switz.table, aes(x=violations)) +
+  geom_bar(color="blue", fill=rgb(0.1,0.4,0.5,0.7) ) + xlab("Violated ECHR Aritcles by Switzerland")
+sw
+
+#data frame for Slovakia
+x3 <- "Slovakia"
+x4 <- slovakia
+slov.table <- list(country = x3, violations = x4)
+slov.table <- as.data.frame(slov.table)
+slov.table <- slov.table[-1,] 
+#plot
+sl <- ggplot(slov.table, aes(x=violations)) +
+  geom_bar(color="blue", fill=rgb(0.1,0.4,0.5,0.7) ) + xlab("Violated ECHR Aritcles by Slovakia")
+sl
+                                                
 
 
 
