@@ -129,7 +129,6 @@ We can see, article 6 is the most violated article of 72 violations.
 
 We repeat the above steps for Switzerland. 
 ```{r}
-#get number of violations for switzerland (since the values are displayed as a list, we need to apply unlist; in a second step we remove the spaces)
 switz <- agg$violations_with_text[2]
 switz <- str_split(switz, 'violation of art. ')
 switz <- unlist(switz)
