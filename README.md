@@ -123,7 +123,7 @@ slovakia <- as.factor(slovakia)
 slovakia
 table(slovakia)
 ```
-We can see, article 6 is the most violated article of 72 violations.
+We can see, article 6 is the most violated article by Slovakia with 72 violations.
 
 ##Step 9
 
@@ -137,7 +137,7 @@ switz <- as.factor(switz)
 switz
 table(switz)
 ```
-In contrast, we see article 8 is the most violated article by Switzerland.
+In contrast, we see article 8 is the most violated article by Switzerland with 13 observations.
 
 
 ## Step 10
