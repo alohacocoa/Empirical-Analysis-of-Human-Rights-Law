@@ -125,7 +125,7 @@ table(slovakia)
 ```
 We can see, article 6 is the most violated article by Slovakia with 72 violations.
 
-##Step 9
+## Step 9
 
 We repeat the above steps for Switzerland. 
 ```{r}
