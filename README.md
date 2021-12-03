@@ -4,7 +4,7 @@ This is a student research project for the course "Empirical Analysis of Interna
 # About the project
 We inspect and compare the types of human rights violations committed by Switzerland and Slovakia in the last ten years. We make use of data provided by https://hudoc.echr.coe.int/eng.
 
-Our sample contains 135 cases for Slovakia and 104 cases for Switzerland. There are no double counts.
+Our sample contains 130 cases for Slovakia and 47 cases for Switzerland. There are no double counts.
 
 # How to reproduce this project
 To download the .csv data we used from hudoc, apply the following search parameters: case law > judgements; state > Switzerland, Slovakia; date > last ten years; violations > select all
