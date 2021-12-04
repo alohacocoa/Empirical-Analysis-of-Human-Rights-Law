@@ -14,6 +14,7 @@ library(tidyverse)
 library(margins)
 library(magrittr)
 library(ggeffects)
+library(ggtext)
 library(lme4)
 library(splines)
 library(stargazer)
@@ -94,25 +95,72 @@ x1 <- "Switzerland"
 x2 <- switz
 switz.table <- list(country = x1, violations = x2)
 switz.table <- as.data.frame(switz.table)
-switz.table <- switz.table[-1,] 
-#plot
-sw <- ggplot(switz.table, aes(x=violations)) +
-  geom_bar(color="blue", fill=rgb(0.1,0.4,0.5,0.7) ) + xlab("Violated ECHR Articles by Switzerland")
-sw
+switz.table <- switz.table[-1,]
+switz.table <- switz.table %>% group_by(violations) %>% summarise(count = n())
+switz.table$country <- "Switzerland"
+
 
 #data frame for Slovakia
 x3 <- "Slovakia"
 x4 <- slovakia
 slov.table <- list(country = x3, violations = x4)
 slov.table <- as.data.frame(slov.table)
-slov.table <- slov.table[-1,] 
-#plot
-sl <- ggplot(slov.table, aes(x=violations)) +
-  geom_bar(color="blue", fill=rgb(0.1,0.4,0.5,0.7) ) + xlab("Violated ECHR Articles by Slovakia")
+slov.table <- slov.table[-1,]
+slov.table <- slov.table %>% group_by(violations) %>% summarise(count = n())
+slov.table$country <- "Slovakia"
+
+#combined data frame    
+comb.table <- rbind(slov.table, switz.table) %>%
+  group_by(country) %>% 
+  mutate(total_country = sum(count), proportion = count/total_country) %>%
+  ungroup()
+comb.table$violations <- factor(comb.table$violations, ordered = TRUE, c("", 2, 3, 5, 6, 8, 10, 13, 14, 34)) #for some reason "" was listed as a level too
+
+
+#plotting both countries separately
+bar <- function(data, country){
+  ggplot(data, aes(x=reorder(violations, count), y=count)) +
+    geom_bar(color="blue", fill=rgb(0.2,0.2,0.2,0.7), stat = "identity") +
+    geom_text(aes(label=count), vjust=-0.5) +
+    labs(title = paste("Violated ECHR articles by", country),
+         subtitle = "last 10 years, since 2021") +
+    xlab("article nr.") +
+    ylab("violation count")
+  }
+
+sw <- bar(data = switz.table, country = "Switzerland")
+sl <- bar(data = slov.table, country = "Slovakia")
+sw
 sl
-                                                
+
+#plotting both countries combined
+comb1 <- ggplot(data=comb.table, aes(x=country, y=total_country, fill=country)) +
+  geom_bar(color="blue", stat = "identity", position="dodge", show.legend = FALSE) +
+  geom_text(aes(label=total_country), position=position_dodge(width=0.9), vjust=-0.5) +
+  labs(title = "Violated ECHR articles",
+       subtitle = "total number, last 10 years, since 2021") +
+  ylab("violation count") +
+  scale_fill_manual(aesthetics="fill", values=c(rgb(0.1,0.4,0.5,0.7), rgb(0.5,0.4,0.1,0.7)))
+comb1
+
+comb2 <- ggplot(data=comb.table, aes(x=violations, y=proportion, fill=country)) +
+  geom_bar(color="blue", stat = "identity", position="dodge") +
+  geom_text(aes(label=count), position=position_dodge(width=0.9), vjust=-0.5) +
+  labs(title = "Violated ECHR articles",
+       subtitle = "proportional to country total, absolute numbers above bars, last 10 years, since 2021") +
+  ylab("proportion of country's total violations") +
+  xlab("article nr.") +
+  scale_fill_manual(aesthetics="fill", values=c(rgb(0.1,0.4,0.5,0.7), rgb(0.5,0.4,0.1,0.7)))
+comb2
 
 
+#saving plots
+dir.create('./plots')
+
+ggsave('violated_art_switzerland.png', path = "./plots", plot = sw, width = 7.5, height = 5, device = "png")
+ggsave('violated_art_slovakia.png', path = "./plots", plot = sl, width = 7.5, height = 5, device = "png")
+ggsave('violated_art_total.png', path = "./plots", plot = comb1, width = 4.5, height = 5, device = "png")
+ggsave('violated_art_prop.png', path = "./plots", plot = comb2, width = 7.5, height = 5, device = "png")
 
 
 
